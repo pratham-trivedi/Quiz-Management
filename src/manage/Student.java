@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 public class Student extends person{
-    dbConnect db = new dbConnect();
-    Connection conn = db.connect_to_db("quiz", "postgres", "admin");
+    private final dbConnect db = new dbConnect();
+    private final Connection conn = db.connect_to_db("quiz", "postgres", "admin");
     private String s_Fname;
     private String s_Lname;
     private String s_Pass;
