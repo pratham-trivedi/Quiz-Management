@@ -34,18 +34,19 @@ public class Main {
         for(int i = 0; i<50; i++) System.out.println();
     }
 
+    public static void pressEnter()
+    {
+        System.out.println("Press Enter key to continue...");
+        Scanner s = new Scanner(System.in);
+        s.nextLine();
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         dbConnect db = new dbConnect();
 
-        Connection conn = db.connect_to_db("quiz", "postgres", "admin");
-        db.initialize(conn);
-
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        db.connect_to_db();
+        db.initialize();
 
 
         boolean menu = true;
@@ -56,11 +57,11 @@ public class Main {
 
             switch(chosen){
                 case "1":
-                    Admin admin = new Admin();
+                    Admin admin = new Admin(db);
                     while(admin.login());
                     break;
                 case "2":
-                    Student stud = new Student();
+                    Student stud = new Student(db);
 
                     while(stud.login());
                     break;

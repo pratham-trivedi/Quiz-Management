@@ -8,14 +8,21 @@ import java.util.Scanner;
 
 public class Admin extends person{
 
-    dbConnect db = new dbConnect();
+    private dbConnect db;
     modifyDB mod_db = new modifyDB();
-    Connection conn = db.connect_to_db("quiz", "postgres", "admin");
+    //Connection conn = db.connect_to_db("quiz", "postgres", "admin");
+    Connection conn;
     private String a_ID;
     private String a_Pass;
     private String a_Name;
 
     Scanner sc = new Scanner(System.in);
+
+    public Admin(dbConnect db){
+
+        this.db = db;
+        this.conn = this.db.get_conn();
+    }
     public boolean login(){
         Main.clr();
         System.out.println("=========================================");
@@ -39,6 +46,8 @@ public class Admin extends person{
 
 
     }
+
+
 
     private String dispOptions(String menu){
         while(true) {
@@ -72,7 +81,7 @@ public class Admin extends person{
 
             case "1":
                 operation = dispOptions("Question");
-                System.out.println("Question jova em ne");
+                menuQuestion(operation);
                 break;
             case "2":
                 operation = dispOptions("Student");
@@ -89,8 +98,8 @@ public class Admin extends person{
     }
 
     private boolean verify(String a_ID, String a_Pass){
-        ResultSet admin_log = db.verify_admin(conn, a_ID);
         try {
+            ResultSet admin_log = db.verify_admin(a_ID);
             if (!admin_log.isBeforeFirst() ) {
                 return false;
             }else{
@@ -113,9 +122,10 @@ public class Admin extends person{
                 System.out.println("Make sure to remember the password");
                 System.out.print("ID of student:");
                 String s_ID = sc.next();
-                ResultSet stud_cred = db.verify_Stud(conn, s_ID);
+                ResultSet stud_cred = db.verify_Stud(s_ID);
                 if(is_stud_present(stud_cred)){
                     System.out.println("Student already exists.");
+                    Main.sleep(2000);
                     return;
                 }else{
                     mod_db.add_Stud(conn, s_ID);
@@ -127,12 +137,36 @@ public class Admin extends person{
                 System.out.println("Note: This operation is Not reversible");
                 System.out.print("ID of student:");
                 String s_ID = sc.next();
-                ResultSet stud_cred = db.verify_Stud(conn, s_ID);
+                ResultSet stud_cred = db.verify_Stud(s_ID);
                 if(!is_stud_present(stud_cred)) {
                     System.out.println("Student with ID " + s_ID + " doesn't exists");
+                    Main.sleep(2000);
                     return;
                 }else{
                     mod_db.del_Stud(conn, s_ID);
+                }
+            }else if(operation.equals("3")){
+                ResultSet all_Stud = db.getAllStuds();
+                Main.clr();
+                if(is_stud_present(all_Stud)){
+                    System.out.println("Here's a list of all the student");
+                    int stud_count = 1;
+                    try {
+                    while(all_Stud.next()){
+
+                        String output = String.format("%d. Name - %s %s, ID - %s , Password - %s", stud_count++, all_Stud.getString(2), all_Stud.getString(3), all_Stud.getString(1), all_Stud.getString(4));
+                        System.out.println(output);
+
+                    }
+                } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Main.pressEnter();
+                    return;
+                }else{
+                    System.out.println("No student entry in database");
+                    Main.sleep(2000);
+                    return;
                 }
             }
     }

@@ -6,11 +6,15 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class dbConnect {
-    public Connection connect_to_db(String dbname, String user, String pass){
-        Connection conn = null;
+    private final String server_name = "quiz";
+    private final String user_name = "postgres";
+    private final String password = "admin";
+
+    private Connection conn;
+    public void connect_to_db(){
         try{
             Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+dbname, user, pass);
+            this.conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+server_name, user_name, password);
             if(conn != null){
                 System.out.println("connection established");
             }else{
@@ -19,10 +23,9 @@ public class dbConnect {
         }catch(Exception e){
             System.out.println(e);
         }
-        return conn;
     }
 
-    public void createTableForAdmin(Connection conn, String table_name){
+    public void createTableForAdmin(String table_name){
         Statement statement;
         try{
             String query = "create table if not exists " + table_name + "(name VARCHAR, password VARCHAR, a_id VARCHAR, primary key(a_id));";
@@ -34,7 +37,7 @@ public class dbConnect {
         }
     }
 
-    public void createTableForStudent(Connection conn, String table_name){
+    public void createTableForStudent(String table_name){
         Statement statement;
         try{
             String query = "create table if not exists " + table_name + "(stud_id VARCHAR, first_name VARCHAR, last_name VARCHAR, password VARCHAR, primary key(stud_id));";
@@ -46,7 +49,7 @@ public class dbConnect {
         }
     }
 
-    public void createTableForQuestion(Connection conn, String table_name){
+    public void createTableForQuestion(String table_name){
         Statement statement;
         try{
             String query = "create table if not exists " + table_name + "(q_number INTEGER, q_id VARCHAR, question VARCHAR, option_1 VARCHAR, option_2 VARCHAR, option_3 VARCHAR, option_4 VARCHAR, answer VARCHAR, primary key(q_id));";
@@ -58,13 +61,17 @@ public class dbConnect {
         }
     }
 
-    void initialize(Connection conn){
-        createTableForAdmin(conn, Main.admin_table);
-        createTableForStudent(conn, Main.stud_table);
-        createTableForQuestion(conn, Main.ques_table);
+    void initialize(){
+        createTableForAdmin(Main.admin_table);
+        createTableForStudent(Main.stud_table);
+        createTableForQuestion(Main.ques_table);
     }
 
-    ResultSet verify_Stud(Connection conn, String ID){
+    public Connection get_conn(){
+        return this.conn;
+    }
+
+    ResultSet verify_Stud(String ID){
         Statement statement;
         ResultSet rs = null;
         try{
@@ -78,7 +85,7 @@ public class dbConnect {
         }
     }
 
-    ResultSet verify_admin(Connection conn, String ID){
+    ResultSet verify_admin(String ID){
         Statement statement;
         ResultSet rs = null;
         try{
@@ -91,7 +98,7 @@ public class dbConnect {
             return rs;
         }
     }
-    boolean verify_sub(Connection conn, String code){
+    boolean verify_sub(String code){
         Statement statement;
         ResultSet rs = null;
         try{
@@ -108,6 +115,20 @@ public class dbConnect {
             System.out.println(e);
             return false;
         }
+    }
+
+    ResultSet getAllStuds(){
+        Statement statement;
+        ResultSet rs = null;
+        try{
+            String query = String.format("select * from %s", Main.stud_table);
+            statement = conn.createStatement();
+            rs = statement.executeQuery(query);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+        return rs;
     }
 
 

@@ -9,13 +9,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 public class Student extends person{
-    private final dbConnect db = new dbConnect();
-    private final Connection conn = db.connect_to_db("quiz", "postgres", "admin");
+    private dbConnect db;
+    //private final Connection conn = db.connect_to_db("quiz", "postgres", "admin");
     private String s_Fname;
     private String s_Lname;
     private String s_Pass;
     private String s_ID;
     Scanner sc = new Scanner(System.in);
+
+    public Student(dbConnect db){
+        this.db = db;
+    }
+
     public boolean login(){
         Main.clr();
         System.out.println("=========================================");
@@ -45,7 +50,7 @@ public class Student extends person{
     }
 
     protected boolean verify(String ID, String pass){
-        ResultSet stud_cred = db.verify_Stud(conn, ID);
+        ResultSet stud_cred = db.verify_Stud(ID);
 
         if(is_stud_present(stud_cred) && match_pass(stud_cred, pass)){
             try {
@@ -93,7 +98,7 @@ public class Student extends person{
             System.out.print("Enter the subject code to begin test (case sensitive): ");
             String sub_code = sc.next();
 
-            if(db.verify_sub(conn,sub_code)){
+            if(db.verify_sub(sub_code)){
                 return sub_code;
             }
             System.out.println("This code doesn't have any question, check again");
