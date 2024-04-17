@@ -52,7 +52,7 @@ public class Student extends person{
     protected boolean verify(String ID, String pass){
         ResultSet stud_cred = db.verify_Stud(ID);
 
-        if(is_stud_present(stud_cred) && match_pass(stud_cred, pass)){
+        if(does_Element_exist(stud_cred) && match_pass(stud_cred, pass)){
             try {
                 s_Fname = stud_cred.getString("first_name");
                 s_Lname = stud_cred.getString("last_name");

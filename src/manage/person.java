@@ -4,12 +4,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class person {
-    protected boolean is_stud_present(ResultSet stud) {
-        try {
-            return stud.isBeforeFirst();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    protected boolean does_Element_exist(ResultSet rs) {
+        if (rs != null) {
+            try {
+                return rs.isBeforeFirst();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }{
+            return false;
         }
+
     }
 
         protected  boolean match_pass(ResultSet res, String pass){

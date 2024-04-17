@@ -45,7 +45,6 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         dbConnect db = new dbConnect();
 
-        db.connect_to_db();
         db.initialize();
 
 

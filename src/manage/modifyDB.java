@@ -1,9 +1,7 @@
 package manage;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class modifyDB {
@@ -45,8 +43,44 @@ public class modifyDB {
         }
     }
 
-    ResultSet disp_Stud(Connection conn){
-    return null;
+    void add_Question(Connection conn, String q_ID, String ques){
+        Main.clr();
+        ArrayList<String> q = new ArrayList<String>(7);
+        q.add(q_ID);
+        q.add(ques);
+        System.out.println("Question: " + ques);
+        System.out.println("Option A: ");
+        q.add(sc.nextLine());
+        System.out.println("Option B: ");
+        q.add(sc.nextLine());
+        System.out.println("Option C: ");
+        q.add(sc.nextLine());
+        System.out.println("Option D: ");
+        q.add(sc.nextLine());
+        String ans;
+        while(true) {
+            System.out.println("Answer(A, B, C or D): ");
+            ans = sc.nextLine().toLowerCase();
+            if (!(ans.equals("a") || ans.equals("b") || ans.equals("c") || ans.equals("d"))) {
+                System.out.println("Invalid choice for Answer");
+            }else{
+                break;
+            }
+        }
+        q.add(ans);
+
+        Statement statement;
+        try{
+            String query = String.format("insert into %s values " +
+                    "('%s', '%s', '%s', " + "'%s', '%s', '%s', '%s');", Main.ques_table, q.get(0), q.get(1),q.get(2),q.get(3),q.get(4),q.get(5),q.get(6));
+            statement = conn.createStatement();
+            statement.execute(query);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        System.out.println("Question is Successfully added in the Database");
+        Main.pressEnter();
     }
+
 
 }

@@ -1,5 +1,6 @@
 package manage;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,7 +12,7 @@ public class dbConnect {
     private final String password = "admin";
 
     private Connection conn;
-    public void connect_to_db(){
+    public dbConnect(){
         try{
             Class.forName("org.postgresql.Driver");
             this.conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+server_name, user_name, password);
@@ -52,7 +53,7 @@ public class dbConnect {
     public void createTableForQuestion(String table_name){
         Statement statement;
         try{
-            String query = "create table if not exists " + table_name + "(q_number INTEGER, q_id VARCHAR, question VARCHAR, option_1 VARCHAR, option_2 VARCHAR, option_3 VARCHAR, option_4 VARCHAR, answer VARCHAR, primary key(q_id));";
+            String query = "create table if not exists " + table_name + "(q_id VARCHAR, question VARCHAR, option_1 VARCHAR, option_2 VARCHAR, option_3 VARCHAR, option_4 VARCHAR, answer VARCHAR, primary key(q_id));";
             statement = conn.createStatement();
             statement.executeUpdate(query);
             System.out.println("Question table created");
@@ -130,6 +131,33 @@ public class dbConnect {
 
         return rs;
     }
+    ResultSet getAllQuestions(){
+        Statement statement;
+        ResultSet rs = null;
+        try{
+            String query = String.format("select * from %s", Main.ques_table);
+            statement = conn.createStatement();
+            rs = statement.executeQuery(query);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+        return rs;
+    }
+    ResultSet getQuestion(String ques){
+        Statement statement;
+        ResultSet rs = null;
+        try{
+            String query = String.format("select * from %s where %s = '%s'", Main.ques_table, "question", ques);
+            statement = conn.createStatement();
+            rs = statement.executeQuery(query);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+        return rs;
+    }
+
 
 
 }
