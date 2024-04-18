@@ -82,5 +82,19 @@ public class modifyDB {
         Main.pressEnter();
     }
 
+    void del_Question(Connection conn, String question){
+        Statement statement;
+        try{
+            String query = String.format("delete from %s where %s = '%s';", Main.ques_table, "question", question);
+            statement = conn.createStatement();
+            statement.execute(query);
+            System.out.println("The question has been deleted");
+            System.out.println("Press any key to continue...");
+            System.in.read();
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
 
 }

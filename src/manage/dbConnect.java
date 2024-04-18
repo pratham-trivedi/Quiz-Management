@@ -53,7 +53,19 @@ public class dbConnect {
     public void createTableForQuestion(String table_name){
         Statement statement;
         try{
-            String query = "create table if not exists " + table_name + "(q_id VARCHAR, question VARCHAR, option_1 VARCHAR, option_2 VARCHAR, option_3 VARCHAR, option_4 VARCHAR, answer VARCHAR, primary key(q_id));";
+            String query = "create table if not exists " + table_name + "(subject VARCHAR, question VARCHAR, option_1 VARCHAR, option_2 VARCHAR, option_3 VARCHAR, option_4 VARCHAR, answer VARCHAR, primary key(question));";
+            statement = conn.createStatement();
+            statement.executeUpdate(query);
+            System.out.println("Question table created");
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public void createTableForQuiztoSubject(String table_name){
+        Statement statement;
+        try{
+            String query = "create table if not exists " + table_name + "(q_id VARCHAR, subject VARCHAR, primary key(q_id));";
             statement = conn.createStatement();
             statement.executeUpdate(query);
             System.out.println("Question table created");
@@ -66,6 +78,7 @@ public class dbConnect {
         createTableForAdmin(Main.admin_table);
         createTableForStudent(Main.stud_table);
         createTableForQuestion(Main.ques_table);
+        createTableForQuiztoSubject(Main.quiz_table);
     }
 
     public Connection get_conn(){
@@ -156,6 +169,37 @@ public class dbConnect {
         }
 
         return rs;
+    }
+
+    ResultSet getQuestionfromSubject(String subject){
+        Statement statement;
+        ResultSet rs = null;
+        try{
+            String query = String.format("select * from %s where %s = '%s'", Main.ques_table, "subject", subject);
+            statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rs = statement.executeQuery(query);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+        return rs;
+    }
+
+    public ResultSet dispQuizCode() {
+        ResultSet quiz_code;
+        Statement statement;
+        try {
+            String query = String.format("select * from %s", Main.quiz_table);
+            statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            quiz_code = statement.executeQuery(query);
+            while (quiz_code.next()) {
+                System.out.println(quiz_code.getString(1) + " - " + quiz_code.getString(2));
+            }
+            return quiz_code;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
     }
 
 

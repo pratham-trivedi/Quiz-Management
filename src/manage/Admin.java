@@ -1,10 +1,8 @@
 package manage;
 
 import javax.xml.transform.Result;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLOutput;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Admin extends person{
@@ -27,11 +25,14 @@ public class Admin extends person{
     public boolean login(){
         Main.clr();
         System.out.println("=========================================");
-        System.out.println("Welcome to Admin login, please enter your credentials");
+        System.out.println("Welcome to Admin login, please enter your credentials(type exit to quit)");
         System.out.println("**If you forgot your ID/Password, please contact Help Desk");
         System.out.println();
         System.out.print("ID: ");
         this.a_ID = sc.nextLine();
+        if(a_ID.equalsIgnoreCase("exit")){
+            return false;
+        }
         System.out.print("Password: ");
         this.a_Pass = sc.nextLine();
 
@@ -80,12 +81,20 @@ public class Admin extends person{
         switch(opt){
 
             case "1":
-                operation = dispOptions("Question");
-                menuQuestion(operation);
+                while(true) {
+                    operation = dispOptions("Question");
+                    if(!menuQuestion(operation)){
+                        break;
+                    }
+                }
                 return true;
             case "2":
-                operation = dispOptions("Student");
-                menuStud(operation);
+                while(true) {
+                    operation = dispOptions("Student");
+                    if(!menuStud(operation)){
+                        break;
+                    };
+                }
                 return true;
             case "3":
                 return false;
@@ -113,7 +122,7 @@ public class Admin extends person{
         return true;
     }
 
-    private void menuStud(String operation){
+    private boolean menuStud(String operation){
             if(operation.equals("1")){
                 Main.clr();
                 System.out.println("=========================================");
@@ -125,7 +134,6 @@ public class Admin extends person{
                 if(does_Element_exist(stud_cred)){
                     System.out.println("Student already exists.");
                     Main.sleep(2000);
-                    return;
                 }else{
                     mod_db.add_Stud(conn, s_ID);
                 }
@@ -140,7 +148,6 @@ public class Admin extends person{
                 if(!does_Element_exist(stud_cred)) {
                     System.out.println("Student with ID " + s_ID + " doesn't exists");
                     Main.sleep(2000);
-                    return;
                 }else{
                     mod_db.del_Stud(conn, s_ID);
                 }
@@ -161,26 +168,38 @@ public class Admin extends person{
                         throw new RuntimeException(e);
                     }
                     Main.pressEnter();
-                    return;
                 }else{
                     System.out.println("No student entry in database");
                     Main.sleep(2000);
-                    return;
                 }
+            }else{
+                return false;
             }
+
+            return true;
     }
 
-    private void menuQuestion(String operation){
+    private boolean menuQuestion(String operation){
         if(operation.equals("1")){
             Main.clr();
+            ResultSet quiz_code = db.dispQuizCode();
             System.out.println("=========================================");
             System.out.println("Enter the required Details for the Question");
-            System.out.print("Enter Subject code:");
+            System.out.print("Enter Subject code(refer the table above):");
             String q_ID = sc.next();
             q_ID = q_ID.toLowerCase();
-            inputQues(q_ID);
+            String subject = verify_Qid(quiz_code, q_ID);
+            inputQues(subject);
         }else if(operation.equals("2")){
-
+            Main.clr();
+            ResultSet quiz_code = db.dispQuizCode();
+            System.out.println("=========================================");
+            System.out.println("Enter the Code for the Subject (refer the table above)");
+            System.out.print("code => ");
+            String q_ID = sc.next();
+            q_ID = q_ID.toLowerCase();
+            String question = verify_Qid(quiz_code, q_ID);
+            delQuestion(question);
         }else if(operation.equals("3")){
             ResultSet all_Questions = db.getAllQuestions();
             Main.clr();
@@ -192,7 +211,7 @@ public class Admin extends person{
                         System.out.println("=========================================");
                         System.out.println();
                         System.out.println("Question " + ques_count++);
-                        System.out.println("Code - " + all_Questions.getString(1));
+                        System.out.println("Subject - " + all_Questions.getString(1));
                         System.out.println(all_Questions.getString(2));
                         System.out.println("A. "  + all_Questions.getString(3));
                         System.out.println("B. "  + all_Questions.getString(4));
@@ -204,16 +223,25 @@ public class Admin extends person{
                     throw new RuntimeException(e);
                 }
                 Main.pressEnter();
-                return;
             }else{
                 System.out.println("There are no questions in the Database");
                 Main.sleep(2000);
-                return;
             }
+        }else{
+            return false;
         }
+
+        return true;
     }
 
-    public void inputQues(String q_ID){
+    public void inputQues(String subject){
+
+        if(subject.equals("error")){
+            System.out.println("This code doesnt exist in database, try again");
+            Main.sleep(2000);
+            return;
+        }
+
         String question;
         while(true){
             Main.clr();
@@ -237,7 +265,47 @@ public class Admin extends person{
             System.out.println("This question is already in database");
             Main.sleep(2000);
         }else{
-            mod_db.add_Question(conn, q_ID, question);
+            mod_db.add_Question(conn, subject, question);
+        }
+    }
+
+    public void delQuestion(String subject){
+        if(subject.equals("error")){
+            System.out.println("This code doesnt exist in database, try again");
+            Main.sleep(2000);
+            return;
+        }
+
+        ResultSet question = db.getQuestionfromSubject(subject);
+
+        if(does_Element_exist(question)){
+            try {
+                while (true) {
+                    question.beforeFirst();
+                    ArrayList<String> ques = new ArrayList<String>();
+                    int ques_number = 1;
+                    while (question.next()) {
+                        System.out.println(ques_number++ + ". " + question.getString(2));
+                        ques.add(question.getString(2));
+                    }
+                    System.out.println("which question would you like to delete: ");
+                    int del_ques = sc.nextInt();
+                    if (del_ques >= ques_number || del_ques < 1) {
+                        System.out.println("Invalid option, select again");
+                        continue;
+                    } else {
+                        mod_db.del_Question(conn, ques.get(del_ques-1));
+                        break;
+                    }
+                }
+            }catch (Exception e){
+                System.out.println(e);
+            }
+        }else{
+            System.out.println();
+            System.out.println("There are no questions of this Subject");
+            Main.sleep(2000);
+            return;
         }
     }
 

@@ -13,6 +13,7 @@ public class Main {
     public static final String stud_table = "student";
     public static final String admin_table = "admin";
     public static final String ques_table = "questions";
+    public static final String quiz_table = "quiz";
     public static void mainDisp(){
         System.out.println("=========================================");
         System.out.println("Welcome to ATPF Quiz Interface");
@@ -36,6 +37,7 @@ public class Main {
 
     public static void pressEnter()
     {
+
         System.out.println("Press Enter key to continue...");
         Scanner s = new Scanner(System.in);
         s.nextLine();
