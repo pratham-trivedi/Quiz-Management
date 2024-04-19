@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 public class Student extends person{
-    private dbConnect db;
+    private final dbConnect db;
     //private final Connection conn = db.connect_to_db("quiz", "postgres", "admin");
     private String s_Fname;
     private String s_Lname;
@@ -36,11 +36,10 @@ public class Student extends person{
             System.out.println("You have successfully logged in");
             System.out.println("Starting Quiz in 5 sec");
             Main.sleep(5000);
-            String q_id = dispRule();
+            String subject = dispRule();
 
-         //   Quiz quiz = new Quiz();
-         //   quiz.start(q_id);
-            String temp = sc.next();
+            Quiz quiz = new Quiz(subject, db);
+            quiz.start(subject);
             return false;
        }else{
             System.out.println("Your ID/pass combination is incorrect, try again");
@@ -95,11 +94,15 @@ public class Student extends person{
             System.out.println("3. Each question will be followed by 4 options and 1 correct answer.");
             System.out.println("4. There is not time limit.");
             System.out.println("5. You cannot go back once an answer is marked, so choose carefully.");
+            System.out.println("6. Continue to select subject");
+
+            Main.pressEnter();
+            ResultSet quiz_sub = db.dispQuizCode();
             System.out.print("Enter the subject code to begin test (case sensitive): ");
             String sub_code = sc.next();
-
+            String subject = verify_Qid(quiz_sub, sub_code);
             if(db.verify_sub(sub_code)){
-                return sub_code;
+                return subject;
             }
             System.out.println("This code doesn't have any question, check again");
             Main.sleep(2000);

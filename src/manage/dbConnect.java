@@ -116,7 +116,7 @@ public class dbConnect {
         Statement statement;
         ResultSet rs = null;
         try{
-            String query = String.format("select count(*) from %s where %s = '%s';", Main.ques_table, "q_id", code);
+            String query = String.format("select count(*) from %s where %s = '%s';", Main.quiz_table, "q_id", code);
             statement = conn.createStatement();
             rs = statement.executeQuery(query);
             if(rs.next()) {
@@ -202,6 +202,18 @@ public class dbConnect {
         return null;
     }
 
-
+    public ResultSet fetchQuestionsforQuiz(String subject) {
+        Statement statement;
+        ResultSet rs = null;
+        try {
+            String query = String.format("SELECT * FROM %s WHERE %s = '%s' ORDER BY RANDOM() LIMIT 10", Main.ques_table, "subject", subject);
+            statement = conn.createStatement();
+            rs = statement.executeQuery(query);
+            return rs;
+        } catch (Exception e) {
+            System.out.println(e);
+            return rs;
+        }
+    }
 
 }

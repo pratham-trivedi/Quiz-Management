@@ -42,6 +42,7 @@ public class Main {
         Scanner s = new Scanner(System.in);
         s.nextLine();
     }
+    
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
