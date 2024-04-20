@@ -100,6 +100,7 @@ public class Student extends person{
             ResultSet quiz_sub = db.dispQuizCode();
             System.out.print("Enter the subject code to begin test (case sensitive): ");
             String sub_code = sc.next();
+            sub_code = sub_code.toUpperCase();
             String subject = verify_Qid(quiz_sub, sub_code);
             if(db.verify_sub(sub_code)){
                 return subject;

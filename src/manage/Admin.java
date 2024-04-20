@@ -187,7 +187,7 @@ public class Admin extends person{
             System.out.println("Enter the required Details for the Question");
             System.out.print("Enter Subject code(refer the table above):");
             String q_ID = sc.next();
-            q_ID = q_ID.toLowerCase();
+            q_ID = q_ID.toUpperCase();
             String subject = verify_Qid(quiz_code, q_ID);
             inputQues(subject);
         }else if(operation.equals("2")){
