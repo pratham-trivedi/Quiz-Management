@@ -41,10 +41,10 @@ public class Quiz extends person{
                         System.out.println("=========================================");
                         System.out.println("Question " + (ques_number++) + " : " + question);
                         System.out.println("Options:");
-                        System.out.println("1. " + option1);
-                        System.out.println("2. " + option2);
-                        System.out.println("3. " + option3);
-                        System.out.println("4. " + option4);
+                        System.out.println("A. " + option1);
+                        System.out.println("B. " + option2);
+                        System.out.println("C. " + option3);
+                        System.out.println("D. " + option4);
                         System.out.print("Your answer(a, b, c, d): ");
                         String userAnswer = sc.nextLine();
 
