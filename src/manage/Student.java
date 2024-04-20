@@ -24,22 +24,28 @@ public class Student extends person{
     public boolean login(){
         Main.clr();
         System.out.println("=========================================");
-        System.out.println("Please enter you ID and password (without space) given by the Faculty");
+        System.out.println("Please enter you ID and password (without space) given by the Faculty, Or type exit to return");
         System.out.println("**If you forgot your ID/Password, please contact the respective Faculty");
         System.out.println();
         System.out.print("ID: ");
         this.s_ID = sc.nextLine();
+
+        if(s_ID.equalsIgnoreCase("exit"))return false;
+
         System.out.print("Password: ");
         this.s_Pass = sc.nextLine();
 
         if(verify(s_ID, s_Pass)){
             System.out.println("You have successfully logged in");
-            System.out.println("Starting Quiz in 5 sec");
-            Main.sleep(5000);
+            for(int i = 5; i>=1; i--){
+                System.out.println("Starting Quiz in " + i + " sec");
+                Main.sleep(1000);
+            }
+
             String subject = dispRule();
 
             Quiz quiz = new Quiz(subject, db);
-            quiz.start(subject);
+            quiz.start();
             return false;
        }else{
             System.out.println("Your ID/pass combination is incorrect, try again");
@@ -98,9 +104,13 @@ public class Student extends person{
 
             Main.pressEnter();
             ResultSet quiz_sub = db.dispQuizCode();
+            System.out.println("All    - " + "Random questions from all Subjects");
             System.out.print("Enter the subject code to begin test (case sensitive): ");
             String sub_code = sc.next();
             sub_code = sub_code.toUpperCase();
+            if(sub_code.equals("ALL")){
+                return "ALL";
+            }
             String subject = verify_Qid(quiz_sub, sub_code);
             if(db.verify_sub(sub_code)){
                 return subject;

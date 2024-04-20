@@ -216,4 +216,18 @@ public class dbConnect {
         }
     }
 
+    public ResultSet fetchQuestionsforQuiz_AllSubject() {
+        Statement statement;
+        ResultSet rs = null;
+        try {
+            String query = String.format("SELECT * FROM %s ORDER BY RANDOM() LIMIT 10", Main.ques_table);
+            statement = conn.createStatement();
+            rs = statement.executeQuery(query);
+            return rs;
+        } catch (Exception e) {
+            System.out.println(e);
+            return rs;
+        }
+    }
+
 }

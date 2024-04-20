@@ -17,9 +17,14 @@ public class Quiz extends person{
         this.sc = new Scanner(System.in);
     }
 
-    public void start(String subject) {
+    public void start() {
         try {
-            ResultSet questions = db.fetchQuestionsforQuiz(subject);
+            ResultSet questions;
+            if(quiz_subject.equals("ALL")) {
+                questions = db.fetchQuestionsforQuiz_AllSubject();
+            } else {
+                questions = db.fetchQuestionsforQuiz(quiz_subject);
+            }
             int score = 0;
             int ques_number = 1;
             if(does_Element_exist(questions)) {

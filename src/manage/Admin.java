@@ -197,10 +197,11 @@ public class Admin extends person{
             System.out.println("Enter the Code for the Subject (refer the table above)");
             System.out.print("code => ");
             String q_ID = sc.next();
-            q_ID = q_ID.toLowerCase();
-            String question = verify_Qid(quiz_code, q_ID);
-            delQuestion(question);
+            q_ID = q_ID.toUpperCase();
+            String subject = verify_Qid(quiz_code, q_ID);
+            delQuestion(subject);
         }else if(operation.equals("3")){
+            Main.clr();
             ResultSet all_Questions = db.getAllQuestions();
             Main.clr();
             if(does_Element_exist(all_Questions)){
@@ -295,6 +296,7 @@ public class Admin extends person{
                         continue;
                     } else {
                         mod_db.del_Question(conn, ques.get(del_ques-1));
+
                         break;
                     }
                 }
